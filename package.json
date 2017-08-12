@@ -4,7 +4,8 @@
   "description": "Build a test pipeline with mocha",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html mocha"
+    "test": "nyc --reporter=lcov mocha",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "mocha": ">=3.5.0"
   },
   "devDependencies": {
+    "coveralls": "^2.13.1",
     "mocha": "^3.5.0",
     "nyc": "^11.1.0"
   }
