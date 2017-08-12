@@ -11,4 +11,7 @@ Build a test pipeline with mocha
 [![Built with love](https://img.shields.io/badge/built%20with-love-ff69b4.svg)](https://img.shields.io/badge/built%20with-love-ff69b4.svg)
 [![Powered by mocha](https://img.shields.io/badge/powered%20by-mocha-yellowgreen.svg)](https://img.shields.io/badge/powered%20by-mocha-yellowgreen.svg)
 
+[![Gittip](http://img.shields.io/gittip/djorg83.svg)](https://www.gittip.com/djorg83/)
+
+
 [![NPM](https://nodei.co/npm/mocha-pipe.png?downloads=true&stars=true)](https://nodei.co/npm/mocha-pipe/)
