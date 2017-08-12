@@ -1,0 +1,38 @@
+{
+  "name": "mocha-pipe",
+  "version": "0.0.1",
+  "description": "Build a test pipeline with mocha",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc --reporter=html mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djorg83/mocha-pipe.git"
+  },
+  "keywords": [
+    "mocha",
+    "mocha-pipe",
+    "test",
+    "pipe",
+    "pipeline",
+    "async"
+  ],
+  "author": "Daniel Jorgensen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/djorg83/mocha-pipe/issues"
+  },
+  "homepage": "https://github.com/djorg83/mocha-pipe#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "chai": "^4.1.1",
+    "chai-as-promised": "^7.1.1"
+  },
+  "peerDependencies": {
+    "mocha": ">=3.5.0"
+  },
+  "devDependencies": {
+    "nyc": "^11.1.0"
+  }
+}
