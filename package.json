@@ -33,6 +33,7 @@
     "mocha": ">=3.5.0"
   },
   "devDependencies": {
+    "mocha": "^3.5.0",
     "nyc": "^11.1.0"
   }
 }
