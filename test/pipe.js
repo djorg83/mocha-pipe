@@ -1,10 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
-const chai    = require('chai');
+const Promise   = require('bluebird');
+const chai      = require('chai');
 chai.use(require("chai-as-promised"));
-const expect  = chai.expect;
-const pipe    = require('../lib/pipe');
+const expect    = chai.expect;
+const mochaPipe = require('../lib/pipe');
 
 const authenticate = () => {
     return Promise.reject(new Error('401'));
@@ -33,7 +33,7 @@ describe('mocha-pipe', () => {
             after: expectResult(2)
         }];
 
-        return expect(pipe({ name: 'simple test', steps })).to.eventually.equal(2);
+        return expect(mochaPipe({ name: 'simple test', steps }).run()).to.eventually.equal(2);
     });
 
     it('Should succeed when log = true', () => {
@@ -43,7 +43,7 @@ describe('mocha-pipe', () => {
             execute: () => 5
         }];
 
-        return expect(pipe({ name: 'log true', steps })).to.eventually.equal(5);
+        return expect(mochaPipe({ name: 'log true', steps }).run()).to.eventually.equal(5);
     });
 
     it('Should succeed when before method is used', () => {
@@ -57,7 +57,7 @@ describe('mocha-pipe', () => {
             setTimeout(done, 1500);
         };
 
-        return expect(pipe({ name: 'Test before', steps, before })).to.eventually.equal(5);
+        return expect(mochaPipe({ name: 'Test before', steps, before }).run()).to.eventually.equal(5);
     });
 
     it('Should succeed when no name or before method provided', () => {
@@ -66,18 +66,18 @@ describe('mocha-pipe', () => {
             execute: () => 5
         }];
 
-        return expect(pipe({ steps })).to.eventually.equal(5);
+        return expect(mochaPipe({ steps }).run()).to.eventually.equal(5);
     });
 
     it('Should be rejected if no steps provided', () => {
-        return expect(pipe()).to.eventually.be.rejectedWith(Error)
-            .and.have.deep.property('message', 'No steps defined for pipe.');
+        const noSteps = () => mochaPipe();
+        return expect(noSteps).to.throw('No steps defined for pipe.');
     });
 
     it('Should be rejected if a step has no execute method', () => {
         const steps = [{}];
-        return expect(pipe({ steps })).to.eventually.be.rejectedWith(Error)
-            .and.have.deep.property('message', `Step is missing 'execute' method.`);
+        const noExecute = () => mochaPipe({ steps });
+        return expect(noExecute).to.throw(`Step is missing 'execute' method.`);
     });
 
     it('Should be fulfilled after catching error', () => {
@@ -85,7 +85,7 @@ describe('mocha-pipe', () => {
             name: 'Expect error',
             execute: () => authenticate('bad password').catch(catchErr('401')) 
         }];
-        return expect(pipe({ steps })).to.eventually.be.fulfilled;
+        return expect(mochaPipe({ steps }).run()).to.eventually.be.fulfilled;
     });
 
     it('Should be rejected if a step throws an error', () => {
@@ -98,8 +98,12 @@ describe('mocha-pipe', () => {
             execute: res => res
         }];
 
+        const pipe = mochaPipe({ steps, __mochaOff: true });
+
+        console.log('pipe', pipe);
+
         // __mochaOff simply bypasses the it() call, otherwise my test for a failed test would contain a failed test
-        return expect(pipe({ steps, __mochaOff: true })).to.eventually.be.rejectedWith(Error)
+        return expect(pipe.run()).to.eventually.be.rejectedWith(Error)
             .and.have.deep.property('message', `Boom!`);
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "mocha-pipe",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Build a test pipeline with mocha",
   "main": "index.js",
   "scripts": {

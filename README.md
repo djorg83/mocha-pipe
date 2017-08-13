@@ -27,27 +27,27 @@ npm install react-bootstrap-sweetalert
 
 ### Basic Example
 ```javascript
-const pipe = require('mocha-pipe');
+const mochaPipe = require('mocha-pipe');
 
 const steps = [{
-    name: 'Get user', // it(name, ...);
-    before: () => 'MOCHA_PIPE', // before hook
+    name: 'Get user', // passed to it(name, ...);
+    before: () => 'MOCHA_PIPE',
     execute: (username) => getUser(username),
-    after: res => assertSomething(res) // after hook
+    after: res => assertSomething(res)
 }, {
     name: 'Update user email',
     execute: user => updateEmail(user, 'a@b.com'),
     after: res => assertSomething(res)
 }, {
     name: 'Expect 401 on invalid password',
-    execute: user => authenticate(user, 'bad password').catch(err => isStatus(err, '401')) 
+    execute: user => authenticate(user, 'bad password').catch(err => assertStatusCode(err, '401')) 
 }];
 
-const options = {
-    name  : 'Basic Example', // describe(name, ...);
-    steps : steps
-};
+const pipeline = mochaPipe({
+    name: 'Basic Example', // passed to describe(name, ...);
+    steps
+});
 
-pipe(options);
+pipeline.run();
 ```
 
