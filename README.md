@@ -17,7 +17,7 @@ Build a test pipeline with mocha
 [![NPM](https://nodei.co/npm/mocha-pipe.png?downloads=true&stars=true)](https://nodei.co/npm/mocha-pipe/)
 
 ## mocha-pipe
-mocha-pipe allows you to define your tests as a series of asynchronous units of work. Collectively the individual steps make up the pipeline. Each step pipes its output into the next step. If any uncaught exception occurs, the pipe is considered broken, and the step which threw the error will show as broken.
+mocha-pipe allows you to define your tests as a series of asynchronous units of work. Collectively the individual steps make up the pipeline. Each step pipes its output into the next step. If any uncaught exception occurs, the pipe is considered broken, and the step which threw the error will show as broken. The pipe returns a promise which will be resolved with the result from the last step.
 
 ### Install
 
