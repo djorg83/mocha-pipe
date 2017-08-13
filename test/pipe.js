@@ -1,12 +1,13 @@
 'use strict';
 
 const Promise = require('bluebird');
+const chai    = require('chai');
+chai.use(require("chai-as-promised"));
+const expect  = chai.expect;
 const pipe    = require('../lib/pipe');
 
 const authenticate = () => {
-    return Promise.try(() => {
-        throw new Error('401');
-    });
+    return Promise.reject(new Error('401'));
 };
 
 const catchErr = expected => err => {
@@ -21,58 +22,85 @@ const expectResult = expected => actual => {
     return actual;
 };
 
-const steps = [{
-    log: true,
-    execute: res => res
-}, {
-    name: 'Sync',
-    before: () => 1,
-    execute: res => res+1,
-    after: expectResult(2)
-}, {
-    name: 'Async',
-    before: res => res,
-    execute: res => Promise.delay(500).then(() => res*2),
-    after: expectResult(4)
-}, {
-    name: 'Expect error',
-    execute: () => authenticate('bad password').catch(catchErr('401')) 
-}, {
-    execute: res => res 
-}]
+describe('mocha-pipe', () => {
 
-// with all options
-pipe({
-    name: 'Test Pipeline',
-    steps,
-    before: done => {
-        console.log('     before: Doing some setup work.');
-        setTimeout(done, 1500);
-    }
+    it('Should resolve with the result', () => {
+
+        const steps = [{
+            name: 'Sync',
+            before: () => 1,
+            execute: res => res+1,
+            after: expectResult(2)
+        }];
+
+        return expect(pipe({ name: 'simple test', steps })).to.eventually.equal(2);
+    });
+
+    it('Should succeed when log = true', () => {
+
+        const steps = [{
+            log: true,
+            execute: () => 5
+        }];
+
+        return expect(pipe({ name: 'log true', steps })).to.eventually.equal(5);
+    });
+
+    it('Should succeed when before method is used', () => {
+
+        const steps = [{
+            execute: () => 5
+        }];
+
+        const before = done => {
+            console.log('     before: Doing some setup work.');
+            setTimeout(done, 1500);
+        };
+
+        return expect(pipe({ name: 'Test before', steps, before })).to.eventually.equal(5);
+    });
+
+    it('Should succeed when no name or before method provided', () => {
+
+        const steps = [{
+            execute: () => 5
+        }];
+
+        return expect(pipe({ steps })).to.eventually.equal(5);
+    });
+
+    it('Should be rejected if no steps provided', () => {
+        return expect(pipe()).to.eventually.be.rejectedWith(Error)
+            .and.have.deep.property('message', 'No steps defined for pipe.');
+    });
+
+    it('Should be rejected if a step has no execute method', () => {
+        const steps = [{}];
+        return expect(pipe({ steps })).to.eventually.be.rejectedWith(Error)
+            .and.have.deep.property('message', `Step is missing 'execute' method.`);
+    });
+
+    it('Should be fulfilled after catching error', () => {
+        const steps = [{
+            name: 'Expect error',
+            execute: () => authenticate('bad password').catch(catchErr('401')) 
+        }];
+        return expect(pipe({ steps })).to.eventually.be.fulfilled;
+    });
+
+    it('Should be rejected if a step throws an error', () => {
+
+        const steps = [{
+            execute: () => {
+                throw new Error('Boom!');
+            }
+        }, {
+            execute: res => res
+        }];
+
+        // __mochaOff simply bypasses the it() call, otherwise my test for a failed test would contain a failed test
+        return expect(pipe({ steps, __mochaOff: true })).to.eventually.be.rejectedWith(Error)
+            .and.have.deep.property('message', `Boom!`);
+    });
+
 });
-
-// with no name or before method
-pipe({ steps });
-
-// with no arguments
-pipe();
-
-// step without execute
-pipe({
-    name: 'Test without execute',
-    steps: [{}]
-});
-
-// step with failure
-pipe({
-    name: 'Failed test',
-    steps: [{
-        execute: () => {
-            throw new Error('Boom!');
-        },
-        __resolveOnFailure: true // For self-testing only to get coverage on broken tests
-    }, {
-        execute: res => res
-    }]
-});
-
