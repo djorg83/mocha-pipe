@@ -15,3 +15,39 @@ Build a test pipeline with mocha
 
 
 [![NPM](https://nodei.co/npm/mocha-pipe.png?downloads=true&stars=true)](https://nodei.co/npm/mocha-pipe/)
+
+## mocha-pipe
+mocha-pipe allows you to define your tests as a series of asynchronous units of work. Collectively the individual steps make up the pipeline. Each step pipes its output into the next step. If any uncaught exception occurs, the pipe is considered broken, and the step which threw the error will show as broken.
+
+### Install
+
+```bash
+npm install react-bootstrap-sweetalert
+```
+
+### Basic Example
+```javascript
+const pipe = require('mocha-pipe');
+
+const steps = [{
+    name: 'Get user', // it(name, ...);
+    before: () => 'MOCHA_PIPE', // before hook
+    execute: (username) => getUser(username),
+    after: res => assertSomething(res) // after hook
+}, {
+    name: 'Update user email',
+    execute: user => updateEmail(user, 'a@b.com'),
+    after: res => assertSomething(res)
+}, {
+    name: 'Expect 401 on invalid password',
+    execute: user => authenticate(user, 'bad password').catch(err => isStatus(err, '401')) 
+}];
+
+const options = {
+    name  : 'Basic Example', // describe(name, ...);
+    steps : steps
+};
+
+pipe(options);
+```
+
