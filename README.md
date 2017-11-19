@@ -22,7 +22,9 @@ mocha-pipe allows you to define your tests as a series of asynchronous units of 
 ### Install
 
 ```bash
-npm install react-bootstrap-sweetalert
+npm install --save-dev mocha-pipe
+# or
+yarn add -D mocha-pipe
 ```
 
 ### Basic Example
